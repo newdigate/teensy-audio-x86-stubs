@@ -1,0 +1,9 @@
+set(teensy_audio_x86_stubs_VERSION "@teensy_audio_x86_stubs_VERSION@")
+set(teensy_audio_x86_stubs_LIBS teensy_audio_x86_stubs -L@LIB_INSTALL_DIR@)
+
+@PACKAGE_INIT@
+
+set_and_check(teensy_audio_x86_stubs_INCLUDE_DIR "@INCLUDE_INSTALL_DIR@")
+set_and_check(teensy_audio_x86_stubs_DIR "@LIB_INSTALL_DIR@")
+
+check_required_components(teensy_audio_x86_stubs)
