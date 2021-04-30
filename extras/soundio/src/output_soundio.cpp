@@ -96,22 +96,7 @@ void AudioOutputSoundIO::begin(void)
 
     soundio_flush_events(soundio);
 
-    int selected_device_index = -1;
-    if (device_id) {
-        int device_count = soundio_output_device_count(soundio);
-        for (int i = 0; i < device_count; i += 1) {
-            struct SoundIoDevice *device = soundio_get_output_device(soundio, i);
-            bool select_this_one = strcmp(device->id, device_id) == 0 && device->is_raw == raw;
-            soundio_device_unref(device);
-            if (select_this_one) {
-                selected_device_index = i;
-                break;
-            }
-        }
-    } else {
-        selected_device_index = soundio_default_output_device_index(soundio);
-    }
-
+    int selected_device_index = soundio_default_output_device_index(soundio);
     if (selected_device_index < 0) {
         fprintf(stderr, "Output device not found\n");
         return;
@@ -124,7 +109,6 @@ void AudioOutputSoundIO::begin(void)
     }
 
     fprintf(stderr, "Output device: %s\n", device->name);
-
     if (device->probe_error) {
         fprintf(stderr, "Cannot probe device: %s\n", soundio_strerror(device->probe_error));
         return;
@@ -169,6 +153,7 @@ void AudioOutputSoundIO::begin(void)
 	block_right_1st = NULL;
 
 	update_responsibility = update_setup();
+    active = true;
 }
 
 

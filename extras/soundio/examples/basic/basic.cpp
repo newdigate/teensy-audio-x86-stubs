@@ -1,4 +1,5 @@
 #include <Audio.h>
+#include "teensy_main.h"
 #include "../../src/output_soundio.h"
 
 // GUItool: begin automatically generated code
@@ -13,17 +14,11 @@ void setup() {
   Serial.begin(57600);
   AudioMemory(24);
   sine1.frequency(120.0);
-  sine2.frequency(122.0);
+  sine2.frequency(125.0);
 }
 
 void loop() {
-    //software_isr();
+    delay(1000);
+    Serial.println("hello world...");
 }
 
-int main() {
-    initialize_mock_arduino();
-    setup();
-    while(true){
-        loop();
-    }
-}
