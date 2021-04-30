@@ -29,6 +29,8 @@
 
 #include <Arduino.h>
 #include <AudioStream.h>
+#include "output_i2s.h"
+
 
 class AudioInputI2S : public AudioStream
 {
@@ -54,14 +56,6 @@ private:
 #if !defined(KINETISL)	
 	static uint16_t block_offset;
 #endif	
-};
-
-
-class AudioInputI2Sslave : public AudioInputI2S
-{
-public:
-	AudioInputI2Sslave(void) : AudioInputI2S(0) { begin(); }
-	void begin(void);	
 };
 
 #endif

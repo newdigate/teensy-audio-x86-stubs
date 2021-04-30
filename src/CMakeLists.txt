@@ -1,9 +1,9 @@
 cmake_minimum_required(VERSION 3.5)
-project(teensy_audio_x86_stubs C CXX)
+project(teensy_audio_x86_stubs C CXX ASM)
 set(teensy_audio_x86_stubs_VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 11)
-
+SET(CMAKE_ASM_FLAGS "${CFLAGS} -x assembler-with-cpp")
 set(SOURCE_FILES
         Quantizer.cpp
         Resampler.cpp
@@ -62,6 +62,8 @@ set(SOURCE_FILES
         synth_waveform.cpp
         synth_wavetable.cpp
         synth_whitenoise.cpp
+        data_waveforms.c
+        memcpy_audio.cpp
         )
 
 set(HEADER_FILES
@@ -137,3 +139,5 @@ set(HEADER_FILES
         )
 
 include(CMakeLists.cmake.in)
+
+set(CMAKE_VERBOSE_MAKEFILE  1)

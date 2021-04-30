@@ -61,6 +61,50 @@ void AudioOutputI2S::begin(void)
 
 void AudioOutputI2S::isr(void)
 {
+    int16_t *dest;
+    audio_block_t *blockL, *blockR;
+    uint32_t saddr, offsetL, offsetR;
+
+    dest = (int16_t *)&i2s_tx_buffer[0];
+    if (AudioOutputI2S::update_responsibility) AudioStream::update_all();
+
+    blockL = AudioOutputI2S::block_left_1st;
+    blockR = AudioOutputI2S::block_right_1st;
+    offsetL = AudioOutputI2S::block_left_offset;
+    offsetR = AudioOutputI2S::block_right_offset;
+
+    /*
+    if (blockL && blockR) {
+        memcpy_tointerleaveLR(dest, blockL->data + offsetL, blockR->data + offsetR);
+        offsetL += AUDIO_BLOCK_SAMPLES / 2;
+        offsetR += AUDIO_BLOCK_SAMPLES / 2;
+    } else if (blockL) {
+        memcpy_tointerleaveL(dest, blockL->data + offsetL);
+        offsetL += AUDIO_BLOCK_SAMPLES / 2;
+    } else if (blockR) {
+        memcpy_tointerleaveR(dest, blockR->data + offsetR);
+        offsetR += AUDIO_BLOCK_SAMPLES / 2;
+    } else {
+        memset(dest,0,AUDIO_BLOCK_SAMPLES * 2);
+    }
+     */
+
+    if (offsetL < AUDIO_BLOCK_SAMPLES) {
+        AudioOutputI2S::block_left_offset = offsetL;
+    } else {
+        AudioOutputI2S::block_left_offset = 0;
+        AudioStream::release(blockL);
+        AudioOutputI2S::block_left_1st = AudioOutputI2S::block_left_2nd;
+        AudioOutputI2S::block_left_2nd = NULL;
+    }
+    if (offsetR < AUDIO_BLOCK_SAMPLES) {
+        AudioOutputI2S::block_right_offset = offsetR;
+    } else {
+        AudioOutputI2S::block_right_offset = 0;
+        AudioStream::release(blockR);
+        AudioOutputI2S::block_right_1st = AudioOutputI2S::block_right_2nd;
+        AudioOutputI2S::block_right_2nd = NULL;
+    }
 }
 
 
@@ -76,6 +120,11 @@ void AudioOutputI2S::update(void)
 	audio_block_t *block;
 	block = receiveReadOnly(0); // input 0 = left channel
 	if (block) {
+        /*
+	    for (int i=0; i<AUDIO_BLOCK_SAMPLES;i++) {
+	        Serial.printf("[%d]\n", block->data[i]);
+	    }
+        Serial.print("fff \n"); */
 		__disable_irq();
 		if (block_left_1st == NULL) {
 			block_left_1st = block;

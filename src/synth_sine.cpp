@@ -51,11 +51,9 @@ void AudioSynthWaveformSine::update(void)
 				scale = (ph >> 8) & 0xFFFF;
 				val2 *= scale;
 				val1 *= 0x10000 - scale;
-#if defined(__ARM_ARCH_7EM__)
-				block->data[i] = multiply_32x32_rshift32(val1 + val2, magnitude);
-#elif defined(KINETISL)
+
 				block->data[i] = (((val1 + val2) >> 16) * magnitude) >> 16;
-#endif
+
 				ph += inc;
 			}
 			phase_accumulator = ph;
