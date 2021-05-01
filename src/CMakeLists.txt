@@ -1,9 +1,8 @@
 cmake_minimum_required(VERSION 3.5)
-project(teensy_audio_x86_stubs C CXX ASM)
+project(teensy_audio_x86_stubs C CXX)
 set(teensy_audio_x86_stubs_VERSION 1.0.0)
 
 set(CMAKE_CXX_STANDARD 11)
-SET(CMAKE_ASM_FLAGS "${CFLAGS} -x assembler-with-cpp")
 set(SOURCE_FILES
         Quantizer.cpp
         Resampler.cpp
