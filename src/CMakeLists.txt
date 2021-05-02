@@ -63,6 +63,7 @@ set(SOURCE_FILES
         synth_whitenoise.cpp
         data_waveforms.c
         memcpy_audio.cpp
+        utility/sqrt_integer.c
         )
 
 set(HEADER_FILES
@@ -134,8 +135,11 @@ set(HEADER_FILES
         synth_tonesweep.h
         synth_waveform.h
         synth_wavetable.h
-        synth_whitenoise.h
-        )
+        synth_whitenoise.h)
+
+set(UTILITY_HEADER_FILES
+        utility/dspinst.h
+        utility/sqrt_integer.h)
 
 include(CMakeLists.cmake.in)
 

@@ -7,10 +7,13 @@ set(LIB_INSTALL_DIR ${CMAKE_INSTALL_PREFIX}/lib/teensy_audio_x86_stubs )
 find_package(teensy_x86_stubs)
 include_directories(${teensy_x86_stubs_INCLUDE_DIR})
 
+find_package(teensy_x86_sd_stubs)
+include_directories(${teensy_x86_sd_stubs_INCLUDE_DIR})
+
 add_library(teensy_audio_x86_stubs STATIC
         ${HEADER_FILES}
         ${SOURCE_FILES}
-        )
+        ${UTILITY_HEADER_FILES})
 
 set_target_properties(teensy_audio_x86_stubs PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 set_target_properties(teensy_audio_x86_stubs PROPERTIES LINKER_LANGUAGE C)
@@ -31,6 +34,10 @@ install(TARGETS teensy_audio_x86_stubs DESTINATION
         ARCHIVE DESTINATION ${LIB_INSTALL_DIR}
         PUBLIC_HEADER DESTINATION "include/teensy_audio_x86_stubs"
         )
+
+install(FILES
+        ${UTILITY_HEADER_FILES}
+        DESTINATION "include/teensy_audio_x86_stubs/utility" )
 
 install(FILES
         ${CMAKE_CURRENT_BINARY_DIR}/teensy_audio_x86_stubsConfig.cmake

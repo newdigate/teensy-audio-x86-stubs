@@ -1,5 +1,5 @@
 set(teensy_audio_x86_stubs_soundio_VERSION "@teensy_audio_x86_stubs_VERSION@")
-set(teensy_audio_x86_stubs_soundio_LIBS teensy_audio_x86_stubs -L@LIB_INSTALL_DIR@)
+set(teensy_audio_x86_stubs_soundio_LIBS teensy_audio_x86_stubs_soundio -L@LIB_INSTALL_DIR@)
 
 @PACKAGE_INIT@
 

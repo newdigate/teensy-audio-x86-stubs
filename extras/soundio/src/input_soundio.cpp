@@ -162,19 +162,21 @@ void AudioInputSoundIO::update(void)
 		if (block_right == NULL) {
 			release(block_left);
             block_left = NULL;
+            return;
 		}
 	}
+    if (block_left && block_right) {
+        for (int i = 0; i < AUDIO_BLOCK_SAMPLES; i++) {
+            int16_t leftSample = *read_buf++;
+            block_left->data[i] = leftSample;
+            int16_t rightSample = *read_buf++;
+            block_right->data[i] = rightSample;
+        }
 
-    for (int i=0; i<AUDIO_BLOCK_SAMPLES; i++) {
-        int16_t leftSample = *read_buf++;
-        block_left->data[i] = leftSample;
-        int16_t rightSample = *read_buf++;
-        block_right->data[i] = rightSample;
+        // then transmit the DMA's former blocks
+        transmit(block_left, 0);
+        release(block_left);
+        transmit(block_right, 1);
+        release(block_right);
     }
-
-    // then transmit the DMA's former blocks
-    transmit(block_left, 0);
-    release(block_left);
-    transmit(block_right, 1);
-    release(block_right);
 }
