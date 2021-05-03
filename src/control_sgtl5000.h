@@ -29,6 +29,7 @@
 
 #include <AudioStream.h>
 #include "AudioControl.h"
+#include <math.h>
 
 // SGTL5000-specific defines for headphones
 #define AUDIO_HEADPHONE_DAC 0
