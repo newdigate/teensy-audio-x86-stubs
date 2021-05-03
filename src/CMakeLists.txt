@@ -62,7 +62,6 @@ set(SOURCE_FILES
         synth_wavetable.cpp
         synth_whitenoise.cpp
         data_waveforms.c
-        memcpy_audio.cpp
         utility/sqrt_integer.c
         )
 
