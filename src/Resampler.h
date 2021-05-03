@@ -33,6 +33,7 @@
 
 #include "Arduino.h"
 #include "AudioStream.h"
+#include <math.h>
 //#define DEBUG_RESAMPLER  //activates debug output
 
 #define MAX_FILTER_SAMPLES 40961 //=1024*20 +1
