@@ -26,6 +26,7 @@
 
 #include <Arduino.h>
 #include "control_sgtl5000.h"
+#include <math.h>
 #define CHIP_ID				0x0000
 // 15:8 PARTID		0xA0 - 8 bit identifier for SGTL5000
 // 7:0  REVID		0x00 - revision number for SGTL5000.

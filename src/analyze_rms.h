@@ -29,7 +29,7 @@
 
 #include "Arduino.h"
 #include "AudioStream.h"
-
+#include <math.h>
 class AudioAnalyzeRMS : public AudioStream
 {
 private:
