@@ -11,7 +11,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <stdint.h>
-#include <math.h>
 
 static int usage(char *exe) {
     fprintf(stderr, "Usage: %s [options]\n"

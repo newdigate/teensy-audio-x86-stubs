@@ -30,7 +30,6 @@
 #define quantizer_h_
 
 #include "Arduino.h"
-#include <math.h>
 //#define DEBUG_QUANTIZER
 
 #define NOISE_SHAPE_F_LENGTH 9  //order of filter is 10, but the first coefficient equals 1 and doesn't need to be stored

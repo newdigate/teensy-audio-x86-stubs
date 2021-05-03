@@ -25,7 +25,6 @@
 
 #include "Arduino.h"
 #include "AudioStream.h"
-#include <math.h>
 /******************************************************************/
 //                A u d i o E f f e c t F l a n g e
 // Written by Pete (El Supremo) Jan 2014

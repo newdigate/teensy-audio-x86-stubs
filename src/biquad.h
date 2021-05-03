@@ -30,7 +30,6 @@
 #define biquad_coeffs_h_
 
 #include "Arduino.h"
-#include <math.h>
 
 enum class BiquadType {
 	LOW_PASS, HIGH_PASS, BAND_PASS, NOTCH, ALL_PASS, PEAKING, LOW_SHELF, HIGH_SHELF

@@ -28,7 +28,6 @@
 #define control_cs42448_h_
 
 #include "AudioControl.h"
-#include <math.h>
 
 class AudioControlCS42448 : public AudioControl
 {

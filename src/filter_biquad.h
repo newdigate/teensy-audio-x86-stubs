@@ -29,7 +29,6 @@
 
 #include "Arduino.h"
 #include "AudioStream.h"
-#include <math.h>
 
 class AudioFilterBiquad : public AudioStream
 {

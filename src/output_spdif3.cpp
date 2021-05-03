@@ -31,7 +31,6 @@
 #include "output_spdif3.h"
 #include "utility/imxrt_hw.h"
 #include "memcpy_audio.h"
-#include <math.h>
 
 audio_block_t * AudioOutputSPDIF3::block_left_1st = nullptr;
 audio_block_t * AudioOutputSPDIF3::block_right_1st = nullptr;

@@ -29,7 +29,6 @@
 
 #include "Arduino.h"
 #include "AudioStream.h"
-#include <math.h>
 class AudioAnalyzeToneDetect : public AudioStream
 {
 public:

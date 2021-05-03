@@ -28,7 +28,6 @@
 
 #include "Arduino.h"
 #include "AudioStream.h"
-#include <math.h>
 #include <stdint.h>
 
 #define WAVETABLE_CENTS_SHIFT(C) (pow(2.0, (C)/1200.0))

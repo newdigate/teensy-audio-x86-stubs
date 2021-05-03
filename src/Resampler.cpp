@@ -28,7 +28,6 @@
  */
 
 #include "Resampler.h"
-#include <math.h>
 
 Resampler::Resampler(float attenuation, int32_t minHalfFilterLength, int32_t maxHalfFilterLength, StepAdaptionParameters settings): _targetAttenuation(attenuation)
 {

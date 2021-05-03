@@ -25,7 +25,6 @@
 
 #include "Arduino.h"
 #include "AudioStream.h"
-#include <math.h>
 //                A u d i o S y n t h T o n e S w e e p
 // Written by Pete (El Supremo) Feb 2014
 
