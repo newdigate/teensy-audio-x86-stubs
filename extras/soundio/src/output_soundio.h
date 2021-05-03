@@ -4,6 +4,7 @@
 #include <Arduino.h>
 #include <AudioStream.h>
 #include <soundio/soundio.h>
+#include <math.h>
 
 class AudioOutputSoundIO : public AudioStream
 {
