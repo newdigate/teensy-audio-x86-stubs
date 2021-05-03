@@ -14,4 +14,6 @@ add_executable(teensy_audio_soundio_emulator
         src/output_soundio.cpp)
 
 target_link_libraries(teensy_audio_soundio_emulator /usr/local/lib/libsoundio.a)
-target_link_libraries(teensy_audio_soundio_emulator "-framework CoreServices" "-framework CoreAudio" "-framework Foundation" "-framework AudioUnit")
+if (APPLE)
+    target_link_libraries(teensy_audio_soundio_emulator "-framework CoreServices" "-framework CoreAudio" "-framework Foundation" "-framework AudioUnit")
+endif()
