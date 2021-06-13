@@ -14,6 +14,7 @@ set(SOURCE_FILES
         analyze_tonedetect.cpp
         control_cs42448.cpp
         control_sgtl5000.cpp
+        data_ulaw.c
         effect_bitcrusher.cpp
         effect_chorus.cpp
         effect_combine.cpp
