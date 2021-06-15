@@ -183,7 +183,7 @@ void AudioOutputSoundIO::isr(void)
         memcpy_tointerleaveR(dest, blockR->data + offsetR);
         //offsetR += AUDIO_BLOCK_SAMPLES / 2;
     } else {
-        memset(dest,0,AUDIO_BLOCK_SAMPLES * 2);
+        memset(dest,0,AUDIO_BLOCK_SAMPLES * 4);
     }
 
 
@@ -239,7 +239,14 @@ void AudioOutputSoundIO::update(void)
 			__enable_irq();
 			release(tmp);
 		}
-	}
+	} else {
+        	audio_block_t *tmp = block_left_1st;
+			block_left_1st = block_left_2nd;
+			block_left_2nd = block;
+			block_left_offset = 0;
+            if (tmp)
+    			release(tmp);
+    }
 	block = receiveReadOnly(1); // input 1 = right channel
 	if (block) {
 		__disable_irq();
@@ -258,7 +265,14 @@ void AudioOutputSoundIO::update(void)
 			__enable_irq();
 			release(tmp);
 		}
-	}
+	} else {
+        	audio_block_t *tmp = block_right_1st;
+			block_right_1st = block_right_2nd;
+			block_right_2nd = block;
+			block_right_offset = 0;
+            if (tmp)
+    			release(tmp);
+    }
 }
 
 void AudioOutputSoundIO::underflow_callback(struct SoundIoOutStream *outstream) {
