@@ -47,5 +47,5 @@ install(FILES
 # copied from: https://gist.github.com/royvandam/3033428
 # Add uninstall target
 # Requirements: Copy the uninstall.cmake file to the appropriate CMAKE_MODULE_PATH.
-add_custom_target(uninstall
+add_custom_target(uninstall_soundio_stubs
         "${CMAKE_COMMAND}" -P "${CMAKE_CURRENT_SOURCE_DIR}/cmake/uninstall.cmake")

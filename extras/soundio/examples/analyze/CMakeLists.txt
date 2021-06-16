@@ -8,6 +8,9 @@ include_directories(${teensy_x86_stubs_INCLUDE_DIR})
 find_package(teensy_audio_x86_stubs)
 include_directories(${teensy_audio_x86_stubs_INCLUDE_DIR})
 
+find_package(teensy_x86_sd_stubs)
+include_directories(${teensy_x86_sd_stubs_INCLUDE_DIR})
+
 include_directories(/usr/local/include)
 add_executable(teensy_audio_soundio_emulator_analyze_example
         analyze.cpp
@@ -16,6 +19,7 @@ add_executable(teensy_audio_soundio_emulator_analyze_example
 
 target_link_libraries(teensy_audio_soundio_emulator_analyze_example ${teensy_x86_stubs_LIBS})
 target_link_libraries(teensy_audio_soundio_emulator_analyze_example ${teensy_audio_x86_stubs_LIBS})
+target_link_libraries(teensy_audio_soundio_emulator_analyze_example ${teensy_x86_sd_stubs_LIBS})
 target_link_libraries(teensy_audio_soundio_emulator_analyze_example /usr/local/lib/libsoundio.a)
 target_link_libraries(teensy_audio_soundio_emulator_analyze_example
         "-framework CoreServices"
