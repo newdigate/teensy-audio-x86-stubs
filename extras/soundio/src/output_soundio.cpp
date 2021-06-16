@@ -217,6 +217,10 @@ void AudioOutputSoundIO::update(void)
 
 	audio_block_t *block;
 	block = receiveReadOnly(0); // input 0 = left channel
+    if (!block) {
+        block = allocate();
+        memset(block->data, 0, AUDIO_BLOCK_SAMPLES * 2);
+    }
 	if (block) {
 	    /*
 	    for (int i=0; i<AUDIO_BLOCK_SAMPLES;i++) {
@@ -241,6 +245,10 @@ void AudioOutputSoundIO::update(void)
 		}
 	} 
 	block = receiveReadOnly(1); // input 1 = right channel
+    if (!block) {
+        block = allocate();
+        memset(block->data, 0, AUDIO_BLOCK_SAMPLES * 2);
+    }
 	if (block) {
 		__disable_irq();
 		if (block_right_1st == NULL) {
