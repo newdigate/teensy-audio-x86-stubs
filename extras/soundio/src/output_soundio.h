@@ -4,19 +4,23 @@
 #include <Arduino.h>
 #include <AudioStream.h>
 #include <soundio/soundio.h>
-
+#include <thread>
 class AudioOutputSoundIO : public AudioStream
 {
 public:
     AudioOutputSoundIO(void) : AudioStream(2, inputQueueArray) { begin(); }
 	virtual void update(void);
 	void begin(void);
-
+	void end(void);
 protected:
 	static audio_block_t *block_left_1st;
 	static audio_block_t *block_right_1st;
 	static bool update_responsibility;
 	static void isr(void);
+
+	struct SoundIo *soundio;
+	struct SoundIoDevice *device;
+	struct SoundIoOutStream *outstream;
 private:
 	static audio_block_t *block_left_2nd;
 	static audio_block_t *block_right_2nd;

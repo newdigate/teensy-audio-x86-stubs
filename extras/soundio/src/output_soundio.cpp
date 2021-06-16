@@ -80,7 +80,7 @@ void AudioOutputSoundIO::begin(void)
     double latency = 0.0;
     int sample_rate = 44100;
 
-    struct SoundIo *soundio = soundio_create();
+    soundio = soundio_create();
     if (!soundio) {
         fprintf(stderr, "out of memory\n");
         return;
@@ -102,7 +102,7 @@ void AudioOutputSoundIO::begin(void)
         return;
     }
 
-    struct SoundIoDevice *device = soundio_get_output_device(soundio, selected_device_index);
+    device = soundio_get_output_device(soundio, selected_device_index);
     if (!device) {
         fprintf(stderr, "out of memory\n");
         return;
@@ -114,7 +114,7 @@ void AudioOutputSoundIO::begin(void)
         return;
     }
 
-    struct SoundIoOutStream *outstream = soundio_outstream_create(device);
+    outstream = soundio_outstream_create(device);
     if (!outstream) {
         fprintf(stderr, "out of memory\n");
         return;
@@ -219,7 +219,7 @@ void AudioOutputSoundIO::update(void)
 	block = receiveReadOnly(0); // input 0 = left channel
     if (!block) {
         block = allocate();
-        memset(block->data, 0, AUDIO_BLOCK_SAMPLES * 2);
+        if (block) memset(block->data, 0, AUDIO_BLOCK_SAMPLES * 2);
     }
 	if (block) {
 	    /*
@@ -247,7 +247,7 @@ void AudioOutputSoundIO::update(void)
 	block = receiveReadOnly(1); // input 1 = right channel
     if (!block) {
         block = allocate();
-        memset(block->data, 0, AUDIO_BLOCK_SAMPLES * 2);
+        if (block) memset(block->data, 0, AUDIO_BLOCK_SAMPLES * 2);
     }
 	if (block) {
 		__disable_irq();
@@ -272,4 +272,12 @@ void AudioOutputSoundIO::update(void)
 void AudioOutputSoundIO::underflow_callback(struct SoundIoOutStream *outstream) {
     static int count = 0;
     fprintf(stderr, "underflow %d\n", count++);
+}
+
+void AudioOutputSoundIO::end(void) {
+    arduino_should_exit = true;
+    Serial.println("releasing audio");
+    soundio_outstream_destroy(outstream);
+    soundio_device_unref(device);
+    soundio_destroy(soundio);
 }
