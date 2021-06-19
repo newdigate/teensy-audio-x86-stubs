@@ -25,4 +25,11 @@ target_link_libraries(teensy_audio_soundio_emulator_queue_example ${teensy_x86_s
 target_link_libraries(teensy_audio_soundio_emulator_queue_example teensy_audio_x86_stubs)
 target_link_libraries(teensy_audio_soundio_emulator_queue_example ${teensy_x86_sd_stubs_LIBS})
 target_link_libraries(teensy_audio_soundio_emulator_queue_example "-L/usr/local/lib -lsoundio")
-target_link_libraries(teensy_audio_soundio_emulator_queue_example "-framework CoreServices" "-framework CoreAudio" "-framework Foundation" "-framework AudioUnit")
+if  (APPLE)
+        target_link_libraries(teensy_audio_soundio_emulator_queue_example
+                "-framework CoreServices"
+                "-framework CoreAudio"
+                "-framework Foundation"
+                "-framework AudioUnit")
+endif()
+
