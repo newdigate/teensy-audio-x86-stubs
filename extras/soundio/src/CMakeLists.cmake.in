@@ -7,15 +7,18 @@ include_directories(${teensy_x86_stubs_INCLUDE_DIR})
 find_package(teensy_x86_sd_stubs)
 include_directories(${teensy_x86_sd_stubs_INCLUDE_DIR})
 
-find_package(teensy_audio_x86_stubs)
-include_directories(${teensy_audio_x86_stubs_INCLUDE_DIR})
+#find_package(teensy_audio_x86_stubs)
+#include_directories(${teensy_audio_x86_stubs_INCLUDE_DIR})
 
-include_directories(/usr/local/include)
+include_directories(../../../src)
+
+include_directories(/usr/local/include) # soundio
 
 add_library(teensy_audio_x86_stubs_soundio STATIC
         ${HEADER_FILES}
         ${SOURCE_FILES}
         ../../../src/utility/dspinst.h)
+target_link_libraries(teensy_audio_x86_stubs_soundio teensy_audio_x86_stubs)
 
 set_target_properties(teensy_audio_x86_stubs_soundio PROPERTIES PUBLIC_HEADER "${HEADER_FILES}")
 set_target_properties(teensy_audio_x86_stubs_soundio PROPERTIES LINKER_LANGUAGE C)
