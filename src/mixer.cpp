@@ -34,8 +34,9 @@ static void applyGain(int16_t *data, int32_t mult)
 	const int16_t *end = data + AUDIO_BLOCK_SAMPLES;
 
 	do {
-		int32_t val = *data * mult;
-		*data++ = val  >> 16;
+		int32_t val = (*data * mult) >> 8;
+		int16_t ddd = max(-32768, min(val, 32767));
+		*data++ = ddd;
 	} while (data < end);
 }
 
@@ -46,12 +47,14 @@ static void applyGainThenAdd(int16_t *dst, const int16_t *src, int32_t mult)
 	if (mult == MULTI_UNITYGAIN) {
 		do {
 			int32_t val = *dst + *src++;
-			*dst++ = val >> 16;
+			*dst++ = val;
 		} while (dst < end);
 	} else {
 		do {
-			int32_t val = *dst + ((*src++ * mult) >> 8); // overflow possible??
-			*dst++ = val >> 16;
+			int16_t postgain = ((*src++ * mult) >> 8);
+			int32_t val = *dst + postgain; // overflow possible??
+			int16_t ddd = max(-32768, min(val, 32767));
+			*dst++ = ddd;
 		} while (dst < end);
 	}
 }
