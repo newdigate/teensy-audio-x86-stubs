@@ -1,4 +1,4 @@
-name: Ubuntu-x64
+name: audio-soundio
 
 on:
   push:
