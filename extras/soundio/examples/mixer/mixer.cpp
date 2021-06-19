@@ -77,10 +77,6 @@ void loop() {
             Serial.print(AudioMemoryUsage());
             Serial.print(",");
             Serial.print(AudioMemoryUsageMax());
-            Serial.print(", mem:");
-            Serial.print(memory.memory_used);
-            Serial.print(", queue:");
-            Serial.print(queue1.memory_used);
             Serial.println();
         }
     }
