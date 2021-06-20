@@ -8,5 +8,5 @@ Dependencies
 * [teensy-x86-stubs](https://github.com/newdigate/teensy-x86-stubs)
 * [teensy-x86-sd-stubs](https://github.com/newdigate/teensy-x86-sd-stubs)
 
-
+Credits
 * taken from [PaulStoffregen/Audio](https://github.com/PaulStoffregen/Audio)
