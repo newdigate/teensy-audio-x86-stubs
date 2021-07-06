@@ -4,7 +4,7 @@
 #include <Audio.h>
 #include <iostream>
 #include <fstream>
-#include "../../src/output_soundio.h"
+#include "output_soundio.h"
 #include <signal.h>
 #include "AudioSampleKick.h"
 
@@ -48,15 +48,14 @@ void setup() {
 }
 
 void loop() {
-    /*
+    
     unsigned currentMillis = millis();
     if (currentMillis > lastSamplePlayed + 1000) {
         if (!memory.isPlaying()) {
             memory.play(AudioSampleKick);
+            lastSamplePlayed = currentMillis;
         }
-        lastSamplePlayed = currentMillis;
     }
-    */
 
     if (queue1.available() >= 1) {   
         memcpy(buffer, queue1.readBuffer(), 256);
@@ -66,6 +65,7 @@ void loop() {
         //Serial.print(".\n");
         //Serial.flush();
     } 
+    //delay(1);
 }
 
 int main() {

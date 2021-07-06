@@ -26,7 +26,8 @@ void my_handler(sig_atomic_t i){
     if ( i== SIGINT) {
         frec.close();
         printf("Caught signal %d\n",i);
-        exit(1); 
+        arduino_should_exit = true;
+//        exit(1); 
     }
 }
 
@@ -42,7 +43,7 @@ void setup() {
 
     queue1.begin();
     Serial.println("startRecording");
-    frec.open("./RECORD.RAW");
+    frec.open("RECORD.RAW");
     if (!frec.is_open()){
         Serial.println("couldn't open file for recording...");
         exit(-1);
@@ -50,14 +51,6 @@ void setup() {
 }
 
 void loop() {
-    //unsigned currentMillis = millis();
-    //if (currentMillis > lastSamplePlayed + 1000) {
-        //if (!rraw_a1.isPlaying()) {
-        //    rraw_a1.play((const unsigned int *)kick_raw);
-        //}
-        //lastSamplePlayed = currentMillis;
-    //}
-
     if (queue1.available() >= 1) {   
         memcpy(buffer, queue1.readBuffer(), 256);
         queue1.freeBuffer();
@@ -71,7 +64,7 @@ void loop() {
 int main() {
     initialize_mock_arduino();
     setup();    
-    while(true){
+    while(!arduino_should_exit){
         loop();
     }
 }

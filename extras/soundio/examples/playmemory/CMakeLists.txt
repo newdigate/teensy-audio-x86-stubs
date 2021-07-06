@@ -13,12 +13,13 @@ find_package(teensy_x86_sd_stubs)
 include_directories(${teensy_x86_sd_stubs_INCLUDE_DIR})
 
 include_directories(/usr/local/include)
+include_directories(../../src)
+include_directories(../../shared)
+
 add_executable(teensy_audio_soundio_emulator_playmem_example
         playmemory.cpp
-        AudioSampleKick.cpp
-        ../../src/output_soundio.h
-        ../../src/output_soundio.cpp
-        ../../src/input_soundio.h
+        ../../shared/AudioSampleKick.cpp        
+        ../../src/output_soundio.cpp        
         ../../src/input_soundio.cpp)
 
 target_link_libraries(teensy_audio_soundio_emulator_playmem_example ${teensy_x86_stubs_LIBS})
