@@ -30,7 +30,7 @@
 int AudioRecordQueue::available(void)
 {
 	uint32_t h, t;
-
+	std::lock_guard<mutex> lock(_queueLock);
 	h = head;
 	t = tail;
 	if (h >= t) return h - t;
@@ -40,7 +40,7 @@ int AudioRecordQueue::available(void)
 void AudioRecordQueue::clear(void)
 {
 	uint32_t t;
-
+	std::lock_guard<mutex> lock(_queueLock);
 	if (userblock) {
 		release(userblock);
 		userblock = NULL;
@@ -56,7 +56,7 @@ void AudioRecordQueue::clear(void)
 int16_t * AudioRecordQueue::readBuffer(void)
 {
 	uint32_t t;
-
+	std::lock_guard<mutex> lock(_queueLock);
 	if (userblock) return NULL;
 	t = tail;
 	if (t == head) return NULL;
@@ -68,6 +68,7 @@ int16_t * AudioRecordQueue::readBuffer(void)
 
 void AudioRecordQueue::freeBuffer(void)
 {
+	std::lock_guard<mutex> lock(_queueLock);
 	if (userblock == NULL) return;
 	release(userblock);
 	userblock = NULL;
@@ -75,6 +76,7 @@ void AudioRecordQueue::freeBuffer(void)
 
 void AudioRecordQueue::update(void)
 {
+	std::lock_guard<mutex> lock(_queueLock);
 	audio_block_t *block;
 	uint32_t h;
 
