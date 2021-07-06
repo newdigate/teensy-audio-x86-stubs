@@ -53,11 +53,7 @@ protected:
 	static audio_block_t *block_left_1st;
 	static audio_block_t *block_right_1st;
 	static bool update_responsibility;
-	static void isr(void)
-	#if defined(AUDIO_PT8211_OVERSAMPLING)
-		__attribute__((optimize("unroll-loops")))
-	#endif
-	;
+	static void isr(void);
 private:
 	static audio_block_t *block_left_2nd;
 	static audio_block_t *block_right_2nd;
