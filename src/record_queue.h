@@ -29,6 +29,7 @@
 
 #include "Arduino.h"
 #include "AudioStream.h"
+#include <mutex>
 
 class AudioRecordQueue : public AudioStream
 {
@@ -37,6 +38,7 @@ private:
 	static const int max_buffers = 209;
 #else
 	static const int max_buffers = 53;
+	std::mutex _queueLock;
 #endif
 public:
 	AudioRecordQueue(void) : AudioStream(1, inputQueueArray),
