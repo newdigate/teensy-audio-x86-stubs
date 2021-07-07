@@ -20,6 +20,7 @@ set(SOURCE_FILES
         effect_combine.cpp
         effect_delay.cpp
         effect_delay_ext.cpp
+        effect_envelope.cpp
         effect_fade.cpp
         effect_flange.cpp
         effect_freeverb.cpp
@@ -85,6 +86,7 @@ set(HEADER_FILES
         effect_combine.h
         effect_delay.h
         effect_delay_ext.h
+        effect_envelope.h
         effect_fade.h
         effect_flange.h
         effect_freeverb.h
