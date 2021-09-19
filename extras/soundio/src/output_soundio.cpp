@@ -42,6 +42,8 @@ void AudioOutputSoundIO::write_callback(struct SoundIoOutStream *outstream, int 
     const struct SoundIoChannelLayout *layout = &outstream->layout;
 
     for (;;) {
+        if (arduino_should_exit)
+            break;
         isr();
         double pitch = 440.0;
         //double radians_per_second = pitch * 2.0 * PI;
