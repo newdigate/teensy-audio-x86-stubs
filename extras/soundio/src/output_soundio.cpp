@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include "output_soundio.h"
-#include "memcpy_audio.h"
 
 audio_block_t * AudioOutputSoundIO::block_left_1st = NULL;
 audio_block_t * AudioOutputSoundIO::block_right_1st = NULL;
@@ -175,14 +174,14 @@ void AudioOutputSoundIO::isr(void)
 
 
     if (blockL && blockR) {
-        memcpy_tointerleaveLR(dest, blockL->data, blockR->data);
+        tointerleaveLR(dest, blockL->data, blockR->data);
         //offsetL += AUDIO_BLOCK_SAMPLES / 2;
         //offsetR += AUDIO_BLOCK_SAMPLES / 2;
     } else if (blockL) {
-        memcpy_tointerleaveL(dest, blockL->data + offsetL);
+        tointerleaveL(dest, blockL->data + offsetL);
         //offsetL += AUDIO_BLOCK_SAMPLES / 2;
     } else if (blockR) {
-        memcpy_tointerleaveR(dest, blockR->data + offsetR);
+        tointerleaveR(dest, blockR->data + offsetR);
         //offsetR += AUDIO_BLOCK_SAMPLES / 2;
     } else {
         memset(dest,0,AUDIO_BLOCK_SAMPLES * 4);
@@ -282,4 +281,26 @@ void AudioOutputSoundIO::end(void) {
     soundio_outstream_destroy(outstream);
     soundio_device_unref(device);
     soundio_destroy(soundio);
+}
+/* Teensyduino Audio Memcpy
+ * Copyright (c) 2016 Frank Bösing
+ */
+
+void AudioOutputSoundIO::tointerleaveLR(int16_t *dst, const int16_t *srcL, const int16_t *srcR){
+    for (int i=0; i< AUDIO_BLOCK_SAMPLES; i++) {
+        *dst++ = *srcL++;
+        *dst++ = *srcR++;
+    }
+}
+void AudioOutputSoundIO::tointerleaveL(int16_t *dst, const int16_t *srcL){
+    for (int i=0; i< AUDIO_BLOCK_SAMPLES; i++) {
+        *dst++ = *srcL++;
+        dst++;
+    }
+}
+void AudioOutputSoundIO::tointerleaveR(int16_t *dst, const int16_t *srcR){
+    for (int i=0; i< AUDIO_BLOCK_SAMPLES; i++) {
+        dst++;
+        *dst++ = *srcR++;
+    }
 }

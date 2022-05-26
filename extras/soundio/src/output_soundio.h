@@ -31,6 +31,14 @@ private:
     static void write_callback(struct SoundIoOutStream *outstream, int frame_count_min, int frame_count_max);
     static volatile bool want_pause;
     static void underflow_callback(struct SoundIoOutStream *outstream);
+
+/* Teensyduino Audio Memcpy
+ * Copyright (c) 2016 Frank Bösing
+ */
+
+	static void tointerleaveLR(int16_t *dst, const int16_t *srcL, const int16_t *srcR);
+	static void tointerleaveL(int16_t *dst, const int16_t *srcL);
+	static void tointerleaveR(int16_t *dst, const int16_t *srcR);
 };
 
 
