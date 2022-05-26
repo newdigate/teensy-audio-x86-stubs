@@ -37,6 +37,7 @@ set(SOURCE_FILES
         input_adcs.cpp
         input_i2s.cpp
         input_tdm.cpp
+        memcpy_audio.cpp
         mixer.cpp
         output_adat.cpp
         output_dac.cpp
