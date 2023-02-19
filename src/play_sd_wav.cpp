@@ -64,7 +64,7 @@ void AudioPlaySdWav::begin(void)
 bool AudioPlaySdWav::play(const char *filename)
 {
 	stop();
-	wavfile = SD.open(filename);
+	wavfile = _sd.open(filename);
 	if (!wavfile) {
 #if defined(HAS_KINETIS_SDHC)
 		if (!(SIM_SCGC3 & SIM_SCGC3_SDHC)) AudioStopUsingSPI();

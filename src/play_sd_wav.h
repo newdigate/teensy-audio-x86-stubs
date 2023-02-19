@@ -34,7 +34,7 @@
 class AudioPlaySdWav : public AudioStream
 {
 public:
-	AudioPlaySdWav(void) : AudioStream(0, NULL), block_left(NULL), block_right(NULL) { begin(); }
+	AudioPlaySdWav(SDClass &sd = SD) : AudioStream(0, NULL), _sd(sd), block_left(NULL), block_right(NULL) { begin(); }
 	void begin(void);
 	bool play(const char *filename);
 	void togglePlayPause(void);
@@ -46,6 +46,7 @@ public:
 	uint32_t lengthMillis(void);
 	virtual void update(void);
 private:
+	SDClass &_sd;
 	File wavfile;
 	bool consume(uint32_t size);
 	bool parse_format(void);
