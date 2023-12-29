@@ -15,6 +15,10 @@ set(SOURCE_FILES
         control_cs42448.cpp
         control_sgtl5000.cpp
         data_ulaw.c
+        data_bandlimit_step.c
+        data_spdif.c
+        data_waveforms.c
+        data_windows.c
         effect_bitcrusher.cpp
         effect_chorus.cpp
         effect_combine.cpp
@@ -64,8 +68,8 @@ set(SOURCE_FILES
         synth_waveform.cpp
         synth_wavetable.cpp
         synth_whitenoise.cpp
-        data_waveforms.c
         utility/sqrt_integer.c
+
         )
 
 set(HEADER_FILES

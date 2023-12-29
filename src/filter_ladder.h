@@ -40,7 +40,7 @@
 
 #include "Arduino.h"
 #include "AudioStream.h"
-
+#include <arm_math.h>
 enum AudioFilterLadderInterpolation {
 	LADDER_FILTER_INTERPOLATION_LINEAR,
 	LADDER_FILTER_INTERPOLATION_FIR_POLY
@@ -62,9 +62,9 @@ private:
 	static const int INTERPOLATION = 4;
 	static const int interpolation_taps = 36;
 	float interpolation_state[(AUDIO_BLOCK_SAMPLES-1) + interpolation_taps / INTERPOLATION];
-	//arm_fir_interpolate_instance_f32 interpolation;
+	arm_fir_interpolate_instance_f32 interpolation;
 	float decimation_state[(AUDIO_BLOCK_SAMPLES*INTERPOLATION-1) + interpolation_taps];
-	//arm_fir_decimate_instance_f32 decimation;
+	arm_fir_decimate_instance_f32 decimation;
 	static float interpolation_coeffs[interpolation_taps];
 	float LPF(float s, int i);
 	void compute_coeffs(float fc);

@@ -60,8 +60,6 @@ float AudioFilterLadder::interpolation_coeffs[AudioFilterLadder::interpolation_t
 
 void AudioFilterLadder::initpoly()
 {
-	// TODO : below
-	/*
 	if (arm_fir_interpolate_init_f32(&interpolation, INTERPOLATION, interpolation_taps,
 	   interpolation_coeffs, interpolation_state, AUDIO_BLOCK_SAMPLES)) {
 		polyCapable = false;
@@ -72,7 +70,6 @@ void AudioFilterLadder::initpoly()
 		polyCapable = false;
 		return;
 	}
-	 */
 	// TODO: should we fill interpolation_state & decimation_state with zeros?
 	polyCapable = true;
 	polyOn = true;
@@ -234,7 +231,7 @@ void AudioFilterLadder::update(void)
 		for (int i=0; i < AUDIO_BLOCK_SAMPLES; i++) {
 			blockIn[i] = blocka->data[i] * overdrive * (float)INTERPOLATION / 32768.0f;
 		}
-		//arm_fir_interpolate_f32(&interpolation, blockIn, blockOS, AUDIO_BLOCK_SAMPLES);
+		arm_fir_interpolate_f32(&interpolation, blockIn, blockOS, AUDIO_BLOCK_SAMPLES);
 
 		for (int i=0; i < AUDIO_BLOCK_SAMPLES; i++) {
 			if (FCmodActive) {
@@ -263,7 +260,7 @@ void AudioFilterLadder::update(void)
 				blockOutOS[i*4 + os] = stage4;
 			}
 		}
-		//arm_fir_decimate_f32(&decimation, blockOutOS, blockOut, I_NUM_SAMPLES);
+		arm_fir_decimate_f32(&decimation, blockOutOS, blockOut, I_NUM_SAMPLES);
 		for (int i=0; i < AUDIO_BLOCK_SAMPLES; i++) {
 			blocka->data[i] = (float)(blockOut[i]) * 32768.0f;
 		}
