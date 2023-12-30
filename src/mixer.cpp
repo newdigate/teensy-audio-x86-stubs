@@ -31,13 +31,17 @@
 
 static void applyGain(int16_t *data, int32_t mult)
 {
-	const int16_t *end = data + AUDIO_BLOCK_SAMPLES;
+	uint32_t *p = (uint32_t *)data;
+	const uint32_t *end = (uint32_t *)(data + AUDIO_BLOCK_SAMPLES);
 
 	do {
-		int32_t val = (*data * mult) >> 8;
-		int16_t ddd = max(-32768, min(val, 32767));
-		*data++ = ddd;
-	} while (data < end);
+		uint32_t tmp32 = *p; // read 2 samples from *data
+		int32_t val1 = signed_multiply_32x16b(mult, tmp32);
+		int32_t val2 = signed_multiply_32x16t(mult, tmp32);
+		val1 = signed_saturate_rshift(val1, 16, 0);
+		val2 = signed_saturate_rshift(val2, 16, 0);
+		*p++ = pack_16b_16b(val2, val1);
+	} while (p < end);
 }
 
 static void applyGainThenAdd(int16_t *dst, const int16_t *src, int32_t mult)
