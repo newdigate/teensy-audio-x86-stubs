@@ -25,8 +25,13 @@ Examples
 * [recordsine](extras/soundio/examples/recordsine)
   * record sine and save to file system  
 
-# issue for soundio dynamic library loading issue when using XCode 15
+# Soundio dynamic library loading issue when using XCode 15
 * symptoms: compiles success, but when running, an error message appears about a missing symbol. A signal is thrown before the application runs during the dynamic loading of soundio.dylib
+  ```
+  dyld[3457]: Symbol not found: _soundio_backend_name
+  Referenced from: <852044B9-0C60-374A-88FF-78C26EBA525E> /Users/goofy/code/
+  Expected in:     <no uuid> unknown
+  ```
 * fix:
   * solution found in go-lang (https://forum.golangbridge.org/t/go-test-with-cgo-on-macos-and-dyld-library-path/32274/2)
   * noted here [my gist](https://gist.github.com/newdigate/8418a30039b9c1c849a1a20db2de81dc) 
