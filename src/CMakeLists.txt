@@ -2,6 +2,10 @@ cmake_minimum_required(VERSION 3.5)
 project(teensy_audio_x86_stubs C CXX)
 set(teensy_audio_x86_stubs_VERSION 1.0.0)
 
+find_library(teensy_x86_stubs NAME teensy_x86_stubs)
+find_library(teensy_x86_sd_stubs NAME teensy_x86_sd_stubs)
+include_directories(${teensy_x86_sd_stubs_LIBS})
+
 set(CMAKE_CXX_STANDARD 11)
 set(SOURCE_FILES
         Quantizer.cpp
