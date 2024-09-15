@@ -1,0 +1,2 @@
+find_library(teensy_x86_stubs NAME teensy_x86_stubs)
+find_library(teensy_x86_sd_stubs NAME teensy_x86_sd_stubs)
