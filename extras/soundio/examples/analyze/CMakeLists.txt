@@ -2,14 +2,7 @@ cmake_minimum_required(VERSION 3.10)
 project(teensy_audio_soundio_emulator_analyze_example)
 set(CMAKE_CXX_STANDARD 11)
 
-find_package(teensy_x86_stubs)
-include_directories(${teensy_x86_stubs_INCLUDE_DIR})
-
-#find_package(teensy_audio_x86_stubs)
-#include_directories(${teensy_audio_x86_stubs_INCLUDE_DIR})
 include_directories(../../../../src)
-
-include(../examples.cmake.in)
 
 include_directories(/usr/local/include)
 add_executable(teensy_audio_soundio_emulator_analyze_example

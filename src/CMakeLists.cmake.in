@@ -1,12 +1,6 @@
 message("building for linux...")
 add_definitions(-DBUILD_FOR_LINUX)
 
-find_library(teensy_x86_stubs NAME teensy_x86_stubs)
-include_directories(${teensy_x86_stubs_INCLUDE_DIR})
-
-find_library(teensy_x86_sd_stubs NAME teensy_x86_sd_stubs)
-include_directories(${teensy_x86_sd_stubs_INCLUDE_DIR})
-
 add_library(teensy_audio_x86_stubs STATIC
         ${HEADER_FILES}
         ${SOURCE_FILES}

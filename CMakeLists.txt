@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.10)
 project(teensy_audio_x86_stubs)
+
+include(cmake_declare_and_fetch.cmake.in)
+DeclareAndFetch(teensy_x86_stubs            git@github.com:newdigate/teensy-x86-stubs.git noinstall src)
+DeclareAndFetch(teensy_x86_sd_stubs         git@github.com:newdigate/teensy-x86-sd-stubs noinstall src)
 add_subdirectory(src)
 
 find_library(LIB_soundio soundio)
@@ -8,6 +12,7 @@ if (LIB_soundio)
     add_subdirectory(extras/soundio/examples/analyze)
     add_subdirectory(extras/soundio/examples/basic)
     add_subdirectory(extras/soundio/examples/input)
+    add_subdirectory(extras/soundio/examples/mixer)
     add_subdirectory(extras/soundio/examples/playmemory)
     add_subdirectory(extras/soundio/examples/queue)
     add_subdirectory(extras/soundio/examples/recordsine)

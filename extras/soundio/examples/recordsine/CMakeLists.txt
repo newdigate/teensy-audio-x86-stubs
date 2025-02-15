@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.10)
 project(teensy_audio_soundio_emulator_recordsine_example)
 set(CMAKE_CXX_STANDARD 11)
 
-include(../examples.cmake.in)
-
 include_directories(../../../../src)
 include_directories(/usr/local/include)
 
