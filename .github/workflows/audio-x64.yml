@@ -19,16 +19,6 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - uses: actions/checkout@v2
-        with:
-          repository: newdigate/teensy-x86-stubs
-          path: teensy-x86-stubs
-
-      - uses: actions/checkout@v2
-        with:
-          repository: newdigate/teensy-x86-sd-stubs
-          path: teensy-x86-sd-stubs
-
       - name: download dependencies
         run: sudo apt-get update && sudo apt-get install -yq libboost-test-dev
 
