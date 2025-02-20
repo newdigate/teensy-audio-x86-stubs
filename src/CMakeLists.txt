@@ -148,6 +148,7 @@ set(UTILITY_HEADER_FILES
         utility/dspinst.h
         utility/sqrt_integer.h)
 
-include(CMakeLists.cmake.in)
-
-set(CMAKE_VERBOSE_MAKEFILE  1)
+add_library(teensy_audio_x86_stubs STATIC
+        ${HEADER_FILES}
+        ${SOURCE_FILES}
+        ${UTILITY_HEADER_FILES})
