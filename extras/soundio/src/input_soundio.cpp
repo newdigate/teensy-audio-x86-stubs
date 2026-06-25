@@ -1,4 +1,5 @@
 #include "input_soundio.h"
+#include "soundio_helpers.h"
 #include <soundio/soundio.h>
 
 audio_block_t * AudioInputSoundIO::block_left = NULL;
@@ -148,35 +149,37 @@ void AudioInputSoundIO::update(void)
 {
     soundio_flush_events(soundio);
     delay(1);
+    const int block_bytes = AUDIO_BLOCK_SAMPLES * 4; // stereo, 2 bytes/sample
     int fill_bytes = soundio_ring_buffer_fill_count(rc.ring_buffer);
-    if (fill_bytes == 0) return;
+    // Only consume once a whole block is buffered; a partial fill must not
+    // advance the read pointer (it would read past the valid data).
+    if (!audio_soundio_input_block_ready(fill_bytes, block_bytes)) return;
 
     int16_t *read_buf = (int16_t *)soundio_ring_buffer_read_ptr(rc.ring_buffer);
 
-    soundio_ring_buffer_advance_read_ptr(rc.ring_buffer, AUDIO_BLOCK_SAMPLES * 4);
-
-	// allocate 2 new blocks, but if one fails, allocate neither
+	// allocate 2 new blocks, but if one fails, allocate neither (and leave the
+	// data in the ring buffer for the next update rather than dropping it)
 	block_left = allocate();
-	if (block_left != NULL) {
-		block_right = allocate();
-		if (block_right == NULL) {
-			release(block_left);
-            block_left = NULL;
-            return;
-		}
+	if (block_left == NULL) return;
+	block_right = allocate();
+	if (block_right == NULL) {
+		release(block_left);
+		block_left = NULL;
+		return;
 	}
-    if (block_left && block_right) {
-        for (int i = 0; i < AUDIO_BLOCK_SAMPLES; i++) {
-            int16_t leftSample = *read_buf++;
-            block_left->data[i] = leftSample;
-            int16_t rightSample = *read_buf++;
-            block_right->data[i] = rightSample;
-        }
 
-        // then transmit the DMA's former blocks
-        transmit(block_left, 0);
-        release(block_left);
-        transmit(block_right, 1);
-        release(block_right);
+    for (int i = 0; i < AUDIO_BLOCK_SAMPLES; i++) {
+        block_left->data[i] = *read_buf++;
+        block_right->data[i] = *read_buf++;
     }
+
+    // Advance only after the copy: releasing the bytes earlier lets the
+    // read_callback thread overwrite them mid-read (torn read).
+    soundio_ring_buffer_advance_read_ptr(rc.ring_buffer, block_bytes);
+
+    // then transmit the DMA's former blocks
+    transmit(block_left, 0);
+    release(block_left);
+    transmit(block_right, 1);
+    release(block_right);
 }

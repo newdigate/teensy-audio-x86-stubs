@@ -24,3 +24,17 @@ jobs:
 
       - name: Make teensy-audio-x86-stubs-soundio
         run:  mkdir cmake-build-$BUILD_TYPE && cd cmake-build-$BUILD_TYPE && cmake -DCMAKE_BUILD_TYPE=$BUILD_TYPE .. && make teensy_audio_x86_stubs_soundio
+
+  helper-tests:
+    # Unit tests for the dependency-free bridge decision logic (bounds/underrun
+    # guards). No libsoundio or Teensy stubs needed, so this runs standalone.
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build and run soundio helper tests
+        run: |
+          g++ -std=c++11 -Wall -Wextra -Iextras/soundio/src \
+              extras/soundio/test/soundio_helpers_test.cpp -o soundio_helpers_test
+          ./soundio_helpers_test

@@ -3,7 +3,6 @@
 
 #include <Arduino.h>
 #include <AudioStream.h>
-#include "input_soundio.h"
 
 
 struct RecordContext {

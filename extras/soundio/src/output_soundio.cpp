@@ -1,5 +1,6 @@
 #include <Arduino.h>
 #include "output_soundio.h"
+#include "soundio_helpers.h"
 
 audio_block_t * AudioOutputSoundIO::block_left_1st = NULL;
 audio_block_t * AudioOutputSoundIO::block_right_1st = NULL;
@@ -12,62 +13,56 @@ double  AudioOutputSoundIO::seconds_offset = 0.0;
 volatile bool AudioOutputSoundIO::want_pause = false;
 __attribute__((aligned(32))) static int16_t i2s_tx_buffer[AUDIO_BLOCK_SAMPLES * 2]; // * 2 becuase its stereo
 
-static void write_sample_s16ne(char *ptr, double sample) {
-    int16_t *buf = (int16_t *)ptr;
-    double range = (double)INT16_MAX - (double)INT16_MIN;
-    double val = sample * range / 2.0;
-    *buf = val;
-}
-
 void AudioOutputSoundIO::write_callback(struct SoundIoOutStream *outstream, int frame_count_min, int frame_count_max) {
-    double float_sample_rate = outstream->sample_rate;
-    double seconds_per_frame = 1.0 / float_sample_rate;
     struct SoundIoChannelArea *areas;
     int err;
 
+    const struct SoundIoChannelLayout *layout = &outstream->layout;
+    const int channel_count = layout->channel_count;
+    // i2s_tx_buffer only holds 2 (stereo) channels; clamp so a device layout
+    // with more channels never reads past it.
+    const int src_channels = audio_soundio_output_channels(channel_count);
+
     int frames_left = frame_count_max;
 
-
-
-    int frame_count = frames_left;
-    if ((err = soundio_outstream_begin_write(outstream, &areas, &frame_count))) {
-        fprintf(stderr, "unrecoverable stream error: %s\n", soundio_strerror(err));
-        exit(1);
-    }
-
-    if (!frame_count)
-        return;
-
-    const struct SoundIoChannelLayout *layout = &outstream->layout;
-
-    for (;;) {
+    while (frames_left > 0) {
         if (arduino_should_exit)
             break;
-        isr();
-        double pitch = 440.0;
-        //double radians_per_second = pitch * 2.0 * PI;
-        int16_t* sample = i2s_tx_buffer;
-        for (int frame = 0; frame < AUDIO_BLOCK_SAMPLES; frame += 1) {
 
-            for (int channel = 0; channel < layout->channel_count; channel += 1) {
-                //write_sample_s16ne(areas[channel].ptr, sample);
-                int16_t *buf = (int16_t *)areas[channel].ptr;
-                *buf = *sample++;
-                areas[channel].ptr += areas[channel].step;
-            }
+        // begin_write may grant FEWER frames than requested; only ever write
+        // into the region soundio actually handed back.
+        int frame_count = frames_left;
+        if ((err = soundio_outstream_begin_write(outstream, &areas, &frame_count))) {
+            fprintf(stderr, "unrecoverable stream error: %s\n", soundio_strerror(err));
+            exit(1);
         }
-        seconds_offset = fmod(seconds_offset + seconds_per_frame * frame_count, 1.0);
-
-        frames_left -= AUDIO_BLOCK_SAMPLES;
-        if (frames_left <= 0)
+        if (!frame_count)
             break;
-    }
 
-    if ((err = soundio_outstream_end_write(outstream))) {
-        if (err == SoundIoErrorUnderflow)
-            return;
-        fprintf(stderr, "unrecoverable stream error: %s\n", soundio_strerror(err));
-        exit(1);
+        int written = 0;
+        while (written < frame_count) {
+            isr(); // generates one AUDIO_BLOCK_SAMPLES block into i2s_tx_buffer
+            int n = audio_soundio_frames_this_pass(AUDIO_BLOCK_SAMPLES, frame_count - written);
+            int16_t *sample = i2s_tx_buffer; // interleaved stereo: L0,R0,L1,R1,...
+            for (int frame = 0; frame < n; frame += 1) {
+                for (int channel = 0; channel < channel_count; channel += 1) {
+                    int16_t *buf = (int16_t *)areas[channel].ptr;
+                    *buf = (channel < src_channels) ? sample[channel] : 0;
+                    areas[channel].ptr += areas[channel].step;
+                }
+                sample += 2;
+            }
+            written += n;
+        }
+
+        if ((err = soundio_outstream_end_write(outstream))) {
+            if (err == SoundIoErrorUnderflow)
+                return;
+            fprintf(stderr, "unrecoverable stream error: %s\n", soundio_strerror(err));
+            exit(1);
+        }
+
+        frames_left -= frame_count;
     }
 
     soundio_outstream_pause(outstream, want_pause);
