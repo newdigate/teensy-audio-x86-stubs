@@ -33,4 +33,17 @@ static inline bool audio_soundio_input_block_ready(int fill_bytes, int block_byt
     return fill_bytes >= block_bytes;
 }
 
+// Whether a soundio error code from a stream read/write callback should tear
+// the stream down. A realtime audio callback must never exit()/throw/block, so
+// errors are reported via shared state instead; transient codes are not even
+// failures. err == 0 and the two caller-supplied recoverable codes (e.g.
+// SoundIoErrorUnderflow, SoundIoErrorInterrupted) are non-fatal; every other
+// non-zero code is fatal. The recoverable codes are passed in rather than
+// referenced here so this header stays free of the <soundio/soundio.h>
+// dependency.
+static inline bool audio_soundio_error_is_fatal(int err, int recoverable_a, int recoverable_b) {
+    if (err == 0) return false;
+    return err != recoverable_a && err != recoverable_b;
+}
+
 #endif

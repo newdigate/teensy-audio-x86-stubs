@@ -51,6 +51,16 @@ int main() {
     CHECK(audio_soundio_input_block_ready(BLOCK_BYTES - 1, BLOCK_BYTES) == false); // partial
     CHECK(audio_soundio_input_block_ready(4, BLOCK_BYTES) == false);               // partial
 
+    // A realtime callback must never exit(); transient soundio codes are not
+    // failures, real stream errors are. UNDERFLOW/INTERRUPTED stand in for
+    // SoundIoErrorUnderflow / SoundIoErrorInterrupted.
+    const int UNDERFLOW = 14, INTERRUPTED = 13;
+    CHECK(audio_soundio_error_is_fatal(0, UNDERFLOW, INTERRUPTED) == false);           // no error
+    CHECK(audio_soundio_error_is_fatal(UNDERFLOW, UNDERFLOW, INTERRUPTED) == false);   // transient
+    CHECK(audio_soundio_error_is_fatal(INTERRUPTED, UNDERFLOW, INTERRUPTED) == false); // transient
+    CHECK(audio_soundio_error_is_fatal(8, UNDERFLOW, INTERRUPTED) == true);            // streaming
+    CHECK(audio_soundio_error_is_fatal(1, UNDERFLOW, INTERRUPTED) == true);            // out of memory
+
     if (failures == 0) {
         std::printf("OK: all soundio helper checks passed\n");
         return 0;

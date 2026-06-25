@@ -11,6 +11,7 @@ uint16_t  AudioOutputSoundIO::block_right_offset = 0;
 bool AudioOutputSoundIO::update_responsibility = false;
 double  AudioOutputSoundIO::seconds_offset = 0.0;
 volatile bool AudioOutputSoundIO::want_pause = false;
+std::atomic<int> AudioOutputSoundIO::last_error{0};
 __attribute__((aligned(32))) static int16_t i2s_tx_buffer[AUDIO_BLOCK_SAMPLES * 2]; // * 2 becuase its stereo
 
 void AudioOutputSoundIO::write_callback(struct SoundIoOutStream *outstream, int frame_count_min, int frame_count_max) {
@@ -33,8 +34,10 @@ void AudioOutputSoundIO::write_callback(struct SoundIoOutStream *outstream, int 
         // into the region soundio actually handed back.
         int frame_count = frames_left;
         if ((err = soundio_outstream_begin_write(outstream, &areas, &frame_count))) {
-            fprintf(stderr, "unrecoverable stream error: %s\n", soundio_strerror(err));
-            exit(1);
+            // Realtime thread: never exit(). Record the error and bail; the
+            // control thread observes it via hasError() and tears down.
+            last_error.store(err, std::memory_order_relaxed);
+            return;
         }
         if (!frame_count)
             break;
@@ -56,10 +59,11 @@ void AudioOutputSoundIO::write_callback(struct SoundIoOutStream *outstream, int 
         }
 
         if ((err = soundio_outstream_end_write(outstream))) {
-            if (err == SoundIoErrorUnderflow)
-                return;
-            fprintf(stderr, "unrecoverable stream error: %s\n", soundio_strerror(err));
-            exit(1);
+            // Underflow/interrupted are transient (the host just couldn't keep
+            // up); not a failure. Anything else is fatal to the stream.
+            if (audio_soundio_error_is_fatal(err, SoundIoErrorUnderflow, SoundIoErrorInterrupted))
+                last_error.store(err, std::memory_order_relaxed);
+            return;
         }
 
         frames_left -= frame_count;
@@ -75,6 +79,10 @@ void AudioOutputSoundIO::begin(void)
     char *stream_name = NULL;
     double latency = 0.0;
     int sample_rate = 44100;
+
+    // Pessimistic until the stream is fully started; cleared on success. Any
+    // early return below therefore leaves hasError() == true.
+    last_error.store(SoundIoErrorInitAudioBackend, std::memory_order_relaxed);
 
     soundio = soundio_create();
     if (!soundio) {
@@ -150,6 +158,15 @@ void AudioOutputSoundIO::begin(void)
 
 	update_responsibility = update_setup();
     active = true;
+    last_error.store(0, std::memory_order_relaxed); // started cleanly
+}
+
+bool AudioOutputSoundIO::hasError() const {
+    return last_error.load(std::memory_order_relaxed) != 0;
+}
+
+const char *AudioOutputSoundIO::lastError() const {
+    return soundio_strerror(last_error.load(std::memory_order_relaxed));
 }
 
 

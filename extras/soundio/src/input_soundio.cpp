@@ -7,6 +7,8 @@ audio_block_t * AudioInputSoundIO::block_right = NULL;
 bool AudioInputSoundIO::update_responsibility = false;
 struct SoundIo *AudioInputSoundIO::soundio = NULL;
 struct RecordContext AudioInputSoundIO::rc;
+std::atomic<int> AudioInputSoundIO::last_error{0};
+std::atomic<unsigned long> AudioInputSoundIO::overflow_count{0};
 
 void AudioInputSoundIO::read_callback(struct SoundIoInStream *instream, int frame_count_min, int frame_count_max) {
     struct RecordContext *rc = ( RecordContext *)instream->userdata;
@@ -18,8 +20,10 @@ void AudioInputSoundIO::read_callback(struct SoundIoInStream *instream, int fram
     int free_count = free_bytes / instream->bytes_per_frame;
 
     if (free_count < frame_count_min) {
-        fprintf(stderr, "ring buffer overflow\n");
-        exit(1);
+        // Ring buffer full: host consuming slower than the device produces.
+        // Drop this batch and count it rather than killing the process.
+        overflow_count.fetch_add(1, std::memory_order_relaxed);
+        return;
     }
 
     int write_frames = min(free_count, frame_count_max);
@@ -29,8 +33,10 @@ void AudioInputSoundIO::read_callback(struct SoundIoInStream *instream, int fram
         int frame_count = frames_left;
 
         if ((err = soundio_instream_begin_read(instream, &areas, &frame_count))) {
-            fprintf(stderr, "begin read error: %s", soundio_strerror(err));
-            exit(1);
+            // Realtime thread: never exit(). Record and bail; the control
+            // thread observes it via hasError().
+            last_error.store(err, std::memory_order_relaxed);
+            return;
         }
 
         if (!frame_count)
@@ -51,8 +57,8 @@ void AudioInputSoundIO::read_callback(struct SoundIoInStream *instream, int fram
         }
 
         if ((err = soundio_instream_end_read(instream))) {
-            fprintf(stderr, "end read error: %s", soundio_strerror(err));
-            exit(1);
+            last_error.store(err, std::memory_order_relaxed);
+            return;
         }
 
         frames_left -= frame_count;
@@ -71,6 +77,10 @@ void AudioInputSoundIO::overflow_callback(struct SoundIoInStream *instream) {
 
 void AudioInputSoundIO::begin(void)
 {
+    // Pessimistic until the stream is fully started; cleared on success, so any
+    // early return below leaves hasError() == true.
+    last_error.store(SoundIoErrorInitAudioBackend, std::memory_order_relaxed);
+
     soundio = soundio_create();
     if (!soundio) {
         fprintf(stderr, "out of memory\n");
@@ -143,6 +153,19 @@ void AudioInputSoundIO::begin(void)
     update_responsibility = update_setup();
 
     active = true;
+    last_error.store(0, std::memory_order_relaxed); // started cleanly
+}
+
+bool AudioInputSoundIO::hasError() const {
+    return last_error.load(std::memory_order_relaxed) != 0;
+}
+
+const char *AudioInputSoundIO::lastError() const {
+    return soundio_strerror(last_error.load(std::memory_order_relaxed));
+}
+
+unsigned long AudioInputSoundIO::overflowCount() const {
+    return overflow_count.load(std::memory_order_relaxed);
 }
 
 void AudioInputSoundIO::update(void)

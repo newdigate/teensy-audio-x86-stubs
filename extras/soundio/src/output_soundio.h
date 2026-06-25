@@ -5,6 +5,7 @@
 #include <AudioStream.h>
 #include <soundio/soundio.h>
 #include <thread>
+#include <atomic>
 class AudioOutputSoundIO : public AudioStream
 {
 public:
@@ -12,6 +13,11 @@ public:
 	virtual void update(void);
 	void begin(void);
 	void end(void);
+	// True if begin() failed or the stream hit a fatal error in its callback.
+	// Poll from loop() and react (report / end() / restart) — the realtime
+	// callback never exits the process.
+	bool hasError() const;
+	const char *lastError() const;
 protected:
 	static audio_block_t *block_left_1st;
 	static audio_block_t *block_right_1st;
@@ -30,6 +36,7 @@ private:
     static double seconds_offset;
     static void write_callback(struct SoundIoOutStream *outstream, int frame_count_min, int frame_count_max);
     static volatile bool want_pause;
+    static std::atomic<int> last_error; // soundio error code, 0 = none
     static void underflow_callback(struct SoundIoOutStream *outstream);
 
 /* Teensyduino Audio Memcpy
